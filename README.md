@@ -11,6 +11,23 @@ This is example code that is not production-ready. It is intended for studying a
 
 (c) Sebastian Bergmann. All rights reserved.
 
+## This Fork 
+
+![raytracer 2022-10-07 09_22_44](https://user-images.githubusercontent.com/956212/194496387-c6121e1c-cadf-43c4-a88c-e33e4781ca8d.gif)
+
+In this fork I simply added the ability to preview the rendering progress in realtime. This requires the [php-glfw](https://github.com/mario-deluna/php-glfw) extension to be installed tho.
+
+All credit for this project goes to Sebastian Bergmann tho, this really just takes the pixel data and outputs it into a window. 
+
+To run the realtime preview just exectue:
+
+```bash
+php tools/preview.php
+```
+
+The preview renders one fixed scene right now, and does not support selecting different ones without changing the code in `preview.php`.
+
+
 ## Progress
 
 - [X] Chapter 1: Tuples, Points, and Vectors
