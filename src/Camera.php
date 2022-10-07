@@ -111,10 +111,8 @@ final class Camera
         return Ray::from($origin, $direction);
     }
 
-    public function render(World $world): Canvas
+    public function render(World $world, CanvasInterface $canvas): void
     {
-        $canvas = Canvas::from($this->horizontalSize, $this->verticalSize, Color::from(0, 0, 0));
-
         foreach (range(1, $this->verticalSize) as $y) {
             foreach (range(1, $this->horizontalSize) as $x) {
                 $ray   = $this->rayForPixel($x, $y);
@@ -122,7 +120,5 @@ final class Camera
                 $canvas->writePixel($x, $y, $color);
             }
         }
-
-        return $canvas;
     }
 }

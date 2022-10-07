@@ -3,16 +3,14 @@ namespace SebastianBergmann\Raytracer;
 
 use function range;
 use IteratorAggregate;
+use GL\Buffer\UByteBuffer;
 
-final class Canvas implements IteratorAggregate, CanvasInterface
+final class CanvasRealtime implements IteratorAggregate, CanvasInterface
 {
     private int $width;
     private int $height;
 
-    /**
-     * @psalm-var array<int,array<int,Color>>
-     */
-    private array $pixels;
+    public UByteBuffer $pixels;
 
     public static function from(int $width, int $height, Color $background): self
     {
@@ -39,12 +37,19 @@ final class Canvas implements IteratorAggregate, CanvasInterface
 
     public function pixelAt(int $x, int $y): Color
     {
-        return $this->pixels[$x][$y];
+        $offset = ($y * $this->width + $x) * 3;
+        $r = $this->pixels[$offset] / 255;
+        $g = $this->pixels[$offset + 1] / 255;
+        $b = $this->pixels[$offset + 2] / 255;
+        return Color::from($r, $g, $b);
     }
 
     public function writePixel(int $x, int $y, Color $c): void
     {
-        $this->pixels[$x][$y] = $c;
+        $offset = ($y * $this->width + $x) * 3;
+        $this->pixels[$offset] = $c->redAsInt();
+        $this->pixels[$offset + 1] = $c->greenAsInt();
+        $this->pixels[$offset + 2] = $c->blueAsInt();
     }
 
     public function getIterator(): CanvasIterator
@@ -54,12 +59,8 @@ final class Canvas implements IteratorAggregate, CanvasInterface
 
     private function initializePixels(Color $background): void
     {
-        $this->pixels = [];
-
-        foreach (range(1, $this->width) as $x) {
-            foreach (range(1, $this->height) as $y) {
-                $this->pixels[$x][$y] = $background;
-            }
-        }
+        $this->pixels = new UByteBuffer();
+        // @todo use the actual background color instead of just black
+        $this->pixels->fill(($this->width() * $this->height() * 4) + 1, 0);
     }
 }

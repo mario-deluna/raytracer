@@ -99,7 +99,8 @@ final class CameraTest extends TestCase
 
         $camera->setTransform(Transformations::view($from, $to, $up));
 
-        $image = $camera->render($world);
+        $image = Canvas::from(11, 11, Color::from(0, 0, 0));
+        $camera->render($world, $image);
 
         $this->assertTrue($image->pixelAt(5, 5)->equalTo(Color::from(0.38066, 0.47583, 0.2855)));
     }

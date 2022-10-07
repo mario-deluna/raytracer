@@ -183,7 +183,11 @@ final class PuttingItTogether
             )
         );
 
-        return $camera->render($world);
+
+        $canvas = Canvas::from(100, 50, Color::from(0, 0, 0));
+        $camera->render($world, $canvas);
+
+        return $canvas;
     }
 
     public function chapter_10(): Canvas
@@ -209,6 +213,9 @@ final class PuttingItTogether
             )
         );
 
-        return $camera->render($world);
+        $canvas = Canvas::from(100, 50, Color::from(0, 0, 0));
+        $camera->render($world, $canvas);
+
+        return $canvas;
     }
 }
