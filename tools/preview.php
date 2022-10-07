@@ -226,14 +226,48 @@ $currentY = 0;
 // lets try to keep 30fps
 $frameTime = 1 / 30;
 
+// flag if we should pause rendering
+$pause = false;
+
+// counter to step a pixel calucaltion if set to > 0
+$stepper = 0;
+
+// register a key listener
+glfwSetKeyCallback($window, function ($key, $scancode, $action, $mods) use (&$pause, $window, &$stepper) {
+    // pause
+    if ($key == GLFW_KEY_SPACE && $action == GLFW_PRESS) {
+        $pause = !$pause;
+    }
+    // exit on essc
+    if ($key == GLFW_KEY_ESCAPE && $action == GLFW_PRESS) {
+        glfwSetWindowShouldClose($window, GLFW_TRUE);
+    }
+    // step on "s"
+    if ($key == GLFW_KEY_S && ($action == GLFW_PRESS || $action == GLFW_REPEAT)) {
+        $stepper = 1;
+    }
+});
+
+// print out a small help text
+echo str_repeat('-', 80) . PHP_EOL;
+echo ' -> Press "space" to pause rendering' . PHP_EOL;
+echo ' -> Press "ESC" to exit' . PHP_EOL;
+echo ' -> Press "S" to step pixel by pixel while paused.' . PHP_EOL;
+echo str_repeat('-', 80) . PHP_EOL;
+
 while (!glfwWindowShouldClose($window)) 
 {
     glClearColor(0.0, 0.0, 0.0, 1.0);
     glClear(GL_COLOR_BUFFER_BIT);
 
+    // if we reached the end of the canvas, we always set pause to true
+    if ($currentY >= $renderHeight) {
+        $pause = true;
+    }
+
     $timeBudget = $frameTime;
     $startTime = microtime(true);
-    while ($timeBudget > 0) {
+    while (($timeBudget > 0 && $pause === false) || $stepper > 0) {
         $ray   = $camera->rayForPixel($currentX, $currentY);
         $color = $world->colorAt($ray);
         $canvas->writePixel($currentX, $currentY, $color);
@@ -248,6 +282,10 @@ while (!glfwWindowShouldClose($window))
         // check if we are done
         if ($currentY >= $renderHeight) {
             break;
+        }
+
+        if ($stepper > 0) {
+            $stepper--;
         }
 
         $timeBudget -= microtime(true) - $startTime;
@@ -266,8 +304,6 @@ while (!glfwWindowShouldClose($window))
     glfwSwapBuffers($window);
     glfwPollEvents();
 }
-
-$camera->render($world, $canvas);
 
 /**
  * Cleanup
